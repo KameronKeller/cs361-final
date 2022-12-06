@@ -36,7 +36,7 @@ class Track
         end
         # Add the coordinate
         tsj += '['
-        tsj += "#{c.longitude},#{c.lat}"
+        tsj += "#{c.longitude},#{c.latitude}"
         if c.elevation != nil
           tsj += ",#{c.elevation}"
         end
@@ -57,22 +57,22 @@ end
 
 class Point
 
-  attr_reader :lat, :longitude, :elevation
+  attr_reader :latitude, :longitude, :elevation
 
-  def initialize(longitude, lat, elevation=nil)
+  def initialize(longitude, latitude, elevation=nil)
     @longitude = longitude
-    @lat = lat
+    @latitude = latitude
     @elevation = elevation
   end
 end
 
 class Waypoint
 
-  attr_reader :lat, :longitude, :elevation, :name, :type
+  attr_reader :latitude, :longitude, :elevation, :name, :type
 
-  def initialize(longitude, lat, elevation=nil, name=nil, type=nil)
+  def initialize(longitude, latitude, elevation=nil, name=nil, type=nil)
     @longitude = longitude
-    @lat = lat
+    @latitude = latitude
     @elevation = elevation
     @name = name
     @type = type
@@ -82,7 +82,7 @@ class Waypoint
     j = '{"type": "Feature",'
     # if name is not nil or type is not nil
     j += '"geometry": {"type": "Point","coordinates": '
-    j += "[#{@longitude},#{@lat}"
+    j += "[#{@longitude},#{@latitude}"
     if elevation != nil
       j += ",#{@elevation}"
     end

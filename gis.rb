@@ -4,7 +4,7 @@ require "json"
 
 class GeoJson
   def get_json(space=' ')
-    JSON.generate(self.get_object, space: space)
+    JSON.generate(self.build_object, space: space)
   end
 end
 
@@ -22,7 +22,7 @@ class Track < GeoJson
     converted_segments
   end
 
-  def get_object
+  def build_object
     track = {}
 
     track["type"] = "Feature"
@@ -39,9 +39,6 @@ class Track < GeoJson
     track
   end
 
-  # def get_json(space=' ')
-  #   JSON.generate(self.get_object, space: space)
-  # end
 end
 
 
@@ -97,7 +94,7 @@ class Waypoint < GeoJson
     @icon = icon
   end
 
-  def get_object
+  def build_object
     waypoint = {}
     waypoint["type"] = "Feature"
     waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
@@ -114,9 +111,6 @@ class Waypoint < GeoJson
   waypoint
   end
 
-  # def get_json(space=' ')
-  #   JSON.generate(self.get_object, space: space)
-  # end
 end
 
 class World < GeoJson
@@ -128,11 +122,11 @@ class World < GeoJson
     @features.append(feature)
   end
 
-  def get_object
+  def build_object
     geo = {"type": "FeatureCollection"}
     feature_list = []
     @features.each do |feature|
-      feature_list.append(feature.get_object)
+      feature_list.append(feature.build_object)
     end
     geo["features"] = feature_list
     geo
@@ -140,7 +134,6 @@ class World < GeoJson
 
   def to_geojson
     self.get_json
-    # JSON.generate(self.get_object, space: space)
   end
 end
 

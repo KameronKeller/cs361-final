@@ -3,13 +3,13 @@
 require "json"
 
 class GeoJson
-  def get_json(space=' ')
+  def get_json(space = ' ')
     JSON.generate(self.build_object, space: space)
   end
 end
 
 class Track < GeoJson
-  def initialize(segments, name=nil)
+  def initialize(segments, name = nil)
     @segments = segments
     @name = name
   end
@@ -44,13 +44,11 @@ class Track < GeoJson
     track["geometry"] = self.build_geometry
     track
   end
-
 end
-
-
 
 class TrackSegment
   attr_reader :coordinates
+
   def initialize(coordinates)
     @coordinates = coordinates
   end
@@ -64,14 +62,10 @@ class TrackSegment
   end
 end
 
-
-
-
 class Point
-
   attr_reader :latitude, :longitude, :elevation
 
-  def initialize(longitude, latitude, elevation=nil)
+  def initialize(longitude, latitude, elevation = nil)
     @longitude = longitude
     @latitude = latitude
     @elevation = elevation
@@ -84,43 +78,37 @@ class Point
     end
     point
   end
-
 end
 
-
-
-
 class Waypoint < GeoJson
-
   attr_reader :location, :name, :icon
 
-  def initialize(location, name=nil, icon=nil)
+  def initialize(location, name = nil, icon = nil)
     @location = location
     @name = name
     @icon = icon
   end
 
   def build_properties
-      properties = {}
-      if name != nil
-        properties["title"] = self.name
-      end
-      if icon != nil
-        properties["icon"] = self.icon
-      end
-      properties
+    properties = {}
+    if name != nil
+      properties["title"] = self.name
+    end
+    if icon != nil
+      properties["icon"] = self.icon
+    end
+    properties
   end
 
   def build_object
     waypoint = {}
     waypoint["type"] = "Feature"
-    waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
+    waypoint["geometry"] = { "type": "Point", "coordinates": self.location.as_list }
     if name != nil or icon != nil
       waypoint["properties"] = self.build_properties
     end
-  waypoint
+    waypoint
   end
-
 end
 
 class World < GeoJson
@@ -128,6 +116,7 @@ class World < GeoJson
     @name = name
     @features = features
   end
+
   def add_feature(feature)
     @features.append(feature)
   end
@@ -141,8 +130,8 @@ class World < GeoJson
   end
 
   def build_object
-    geo = {"type": "FeatureCollection"}
-    
+    geo = { "type": "FeatureCollection" }
+
     geo["features"] = self.build_feature_list
     geo
   end
@@ -153,7 +142,6 @@ class World < GeoJson
 end
 
 def main()
-
   home_location = Point.new(-121.5, 45.5, 30)
   store_location = Point.new(-121.5, 45.6, nil)
 
@@ -161,30 +149,29 @@ def main()
   store = Waypoint.new(store_location, "store", "dot")
 
   segment_1 = TrackSegment.new([
-    Point.new(-122, 45),
-    Point.new(-122, 46),
-    Point.new(-121, 46)
-  ])
+                                 Point.new(-122, 45),
+                                 Point.new(-122, 46),
+                                 Point.new(-121, 46)
+                               ])
 
   segment_2 = TrackSegment.new([
-    Point.new(-121, 45),
-    Point.new(-121, 46)
-  ])
+                                 Point.new(-121, 45),
+                                 Point.new(-121, 46)
+                               ])
 
   segment_3 = TrackSegment.new([
-    Point.new(-121, 45.5),
-    Point.new(-122, 45.5)
-  ])
+                                 Point.new(-121, 45.5),
+                                 Point.new(-122, 45.5)
+                               ])
 
   track_1 = Track.new([segment_1, segment_2], "track 1")
   track_2 = Track.new([segment_3], "track 2")
 
   world = World.new("My Data", [home, store, track_1, track_2])
-  
+
   puts world.to_geojson
 end
 
 if File.identical?(__FILE__, $0)
   main()
 end
-

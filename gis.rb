@@ -89,7 +89,6 @@ end
 
 class Waypoint
 
-  # attr_reader :latitude, :longitude, :elevation, :name, :type
   attr_reader :location, :name, :type
 
   def initialize(location, name=nil, type=nil)
@@ -102,7 +101,6 @@ class Waypoint
     waypoint = {}
     waypoint["type"] = "Feature"
     waypoint["geometry"] = {"type": "Point", "coordinates": self.location}
-    
     if name != nil or type != nil
       properties = {}
       if name != nil
@@ -127,29 +125,39 @@ class World
     @features = features
   end
   def add_feature(feature)
-    @features.append(t)
+    @features.append(feature)
   end
 
-  def to_geojson(indent=0)
-    # Write stuff
-    json_output = '{"type": "FeatureCollection","features": ['
-    @features.each_with_index do |feature, index|
-      if index != 0
-        json_output +=","
-      end
-      if feature.class == Track
-        json_output += feature.get_track_json
-      elsif feature.class == Waypoint
-        json_output += feature.get_waypoint_json
-      end
+  # def to_geo
+  #   geo = {"type": "FeatureCollection"}
+  #   geo["features"] = @features
+  # end
+
+  def to_geojson(space=' ')
+    geo = {"type": "FeatureCollection"}
+    geo["features"] = []
+    @features.each do |feature|
+      geo["features"].append(feature.get_json)
     end
-    json_output + "]}"
+    # json_output = '{"type": "FeatureCollection","features": ['
+    # @features.each_with_index do |feature, index|
+      # if index != 0
+        # json_output +=","
+      # end
+      # if feature.class == Track
+    #     json_output += feature.get_track_json
+    #   # elsif feature.class == Waypoint
+    #     json_output += feature.get_waypoint_json
+    #   # end
+    # end
+    JSON.generate(geo, space: space)
+    # json_output + "]}"
   end
 end
 
 def main()
 
-  if true
+  if false
     test_point = Point.new(-121.5, 45.5, 30)
     home = Waypoint.new(test_point, "home", "flag")
     # p home.location
@@ -158,12 +166,12 @@ def main()
 
 
 
-  if false
+  if true
     home_location = Point.new(-121.5, 45.5, 30)
     store_location = Point.new(-121.5, 45.6, nil)
 
-    home = Waypoint.new(-121.5, 45.5, 30, "home", "flag")
-    store = Waypoint.new(-121.5, 45.6, nil, "store", "dot")
+    home = Waypoint.new(home_location, "home", "flag")
+    store = Waypoint.new(store_location, "store", "dot")
     tracks_1 = [
       Point.new(-122, 45),
       Point.new(-122, 46),
@@ -184,8 +192,9 @@ def main()
     track_2 = Track.new([tracks_3], "track 2")
 
     world = World.new("My Data", [home, store, track_1, track_2])
+    p world.to_geo
 
-    puts world.to_geojson()
+    # puts world.to_geojson()
   end
 end
 

@@ -4,48 +4,48 @@ class Track
   def initialize(segments, name=nil)
     @name = name
     segment_objects = []
-    segments.each do |s|
-      segment_objects.append(TrackSegment.new(s))
+    segments.each do |segment|
+      segment_objects.append(TrackSegment.new(segment))
     end
     # set segments to segment_objects
     @segments = segment_objects
   end
 
   def get_track_json()
-    j = '{'
-    j += '"type": "Feature", '
+    json_output = '{'
+    json_output += '"type": "Feature", '
     if @name != nil
-      j+= '"properties": {'
-      j += '"title": "' + @name + '"'
-      j += '},'
+      json_output+= '"properties": {'
+      json_output += '"title": "' + @name + '"'
+      json_output += '},'
     end
-    j += '"geometry": {'
-    j += '"type": "MultiLineString",'
-    j +='"coordinates": ['
+    json_output += '"geometry": {'
+    json_output += '"type": "MultiLineString",'
+    json_output +='"coordinates": ['
     # Loop through all the segment objects
-    @segments.each_with_index do |s, index|
+    @segments.each_with_index do |segment, index|
       if index > 0
-        j += ","
+        json_output += ","
       end
-      j += '['
+      json_output += '['
       # Loop through all the coordinates in the segment
-      tsj = ''
-      s.coordinates.each do |c|
-        if tsj != ''
-          tsj += ','
+      track_segment_json = ''
+      segment.coordinates.each do |coordinate|
+        if track_segment_json != ''
+          track_segment_json += ','
         end
         # Add the coordinate
-        tsj += '['
-        tsj += "#{c.longitude},#{c.latitude}"
-        if c.elevation != nil
-          tsj += ",#{c.elevation}"
+        track_segment_json += '['
+        track_segment_json += "#{coordinate.longitude},#{coordinate.latitude}"
+        if coordinate.elevation != nil
+          track_segment_json += ",#{coordinate.elevation}"
         end
-        tsj += ']'
+        track_segment_json += ']'
       end
-      j+=tsj
-      j+=']'
+      json_output+=track_segment_json
+      json_output+=']'
     end
-    j + ']}}'
+    json_output + ']}}'
   end
 end
 class TrackSegment
@@ -79,55 +79,55 @@ class Waypoint
   end
 
   def get_waypoint_json(indent=0)
-    j = '{"type": "Feature",'
+    json_output = '{"type": "Feature",'
     # if name is not nil or type is not nil
-    j += '"geometry": {"type": "Point","coordinates": '
-    j += "[#{@longitude},#{@latitude}"
+    json_output += '"geometry": {"type": "Point","coordinates": '
+    json_output += "[#{@longitude},#{@latitude}"
     if elevation != nil
-      j += ",#{@elevation}"
+      json_output += ",#{@elevation}"
     end
-    j += ']},'
+    json_output += ']},'
     if name != nil or type != nil
-      j += '"properties": {'
+      json_output += '"properties": {'
       if name != nil
-        j += '"title": "' + @name + '"'
+        json_output += '"title": "' + @name + '"'
       end
       if type != nil  # if type is not nil
         if name != nil
-          j += ','
+          json_output += ','
         end
-        j += '"icon": "' + @type + '"'  # type is the icon
+        json_output += '"icon": "' + @type + '"'  # type is the icon
       end
-      j += '}'
+      json_output += '}'
     end
-    j += "}"
-    return j
+    json_output += "}"
+    return json_output
   end
 end
 
 class World
-  def initialize(name, things)
+  def initialize(name, features)
     @name = name
-    @features = things
+    @features = features
   end
-  def add_feature(f)
+  def add_feature(feature)
     @features.append(t)
   end
 
   def to_geojson(indent=0)
     # Write stuff
-    s = '{"type": "FeatureCollection","features": ['
-    @features.each_with_index do |f,i|
-      if i != 0
-        s +=","
+    json_output = '{"type": "FeatureCollection","features": ['
+    @features.each_with_index do |feature, index|
+      if index != 0
+        json_output +=","
       end
-      if f.class == Track
-        s += f.get_track_json
-      elsif f.class == Waypoint
-        s += f.get_waypoint_json
+      if feature.class == Track
+        json_output += feature.get_track_json
+      elsif feature.class == Waypoint
+        json_output += feature.get_waypoint_json
       end
     end
-    s + "]}"
+    json_output + "]}"
   end
 end
 

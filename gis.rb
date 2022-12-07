@@ -106,7 +106,6 @@ class Waypoint
   end
 
   def get_json(space=' ')
-    # self.get_waypoint
     JSON.generate(self.get_object, space: space)
   end
 end
@@ -120,11 +119,6 @@ class World
     @features.append(feature)
   end
 
-  # def to_geo
-  #   geo = {"type": "FeatureCollection"}
-  #   geo["features"] = @features
-  # end
-
   def to_geojson(space=' ')
     geo = {"type": "FeatureCollection"}
     feature_list = []
@@ -132,70 +126,40 @@ class World
       feature_list.append(feature.get_object)
     end
     geo["features"] = feature_list
-    # json_output = '{"type": "FeatureCollection","features": ['
-    # @features.each_with_index do |feature, index|
-      # if index != 0
-        # json_output +=","
-      # end
-      # if feature.class == Track
-    #     json_output += feature.get_track_json
-    #   # elsif feature.class == Waypoint
-    #     json_output += feature.get_waypoint_json
-    #   # end
-    # end
+
     JSON.generate(geo, space: space)
-    # json_output + "]}"
   end
 end
 
 def main()
 
-  if false
-    ts1 = [
-      Point.new(-122, 45),
-      Point.new(-122, 46),
-      Point.new(-121, 46),
-    ]
+  home_location = Point.new(-121.5, 45.5, 30)
+  store_location = Point.new(-121.5, 45.6, nil)
 
-    ts2 = [ Point.new(-121, 45), Point.new(-121, 46), ]
+  home = Waypoint.new(home_location, "home", "flag")
+  store = Waypoint.new(store_location, "store", "dot")
+  tracks_1 = [
+    Point.new(-122, 45),
+    Point.new(-122, 46),
+    Point.new(-121, 46)
+  ]
 
-    t = Track.new([ts1, ts2], "track 1")
-    expected = JSON.parse('{"type": "Feature", "properties": {"title": "track 1"},"geometry": {"type": "MultiLineString","coordinates": [[[-122,45],[-122,46],[-121,46]],[[-121,45],[-121,46]]]}}')
-    p t.get_object
-  end
+  tracks_2 = [
+    Point.new(-121, 45),
+    Point.new(-121, 46)
+  ]
 
+  tracks_3 = [
+    Point.new(-121, 45.5),
+    Point.new(-122, 45.5)
+  ]
 
+  track_1 = Track.new([tracks_1, tracks_2], "track 1")
+  track_2 = Track.new([tracks_3], "track 2")
 
-  if true
-    home_location = Point.new(-121.5, 45.5, 30)
-    store_location = Point.new(-121.5, 45.6, nil)
-
-    home = Waypoint.new(home_location, "home", "flag")
-    store = Waypoint.new(store_location, "store", "dot")
-    tracks_1 = [
-      Point.new(-122, 45),
-      Point.new(-122, 46),
-      Point.new(-121, 46)
-    ]
-
-    tracks_2 = [
-      Point.new(-121, 45),
-      Point.new(-121, 46)
-    ]
-
-    tracks_3 = [
-      Point.new(-121, 45.5),
-      Point.new(-122, 45.5)
-    ]
-
-    track_1 = Track.new([tracks_1, tracks_2], "track 1")
-    track_2 = Track.new([tracks_3], "track 2")
-
-    world = World.new("My Data", [home, store, track_1, track_2])
-    puts world.to_geojson
-
-    # puts world.to_geojson()
-  end
+  world = World.new("My Data", [home, store, track_1, track_2])
+  
+  puts world.to_geojson
 end
 
 if File.identical?(__FILE__, $0)

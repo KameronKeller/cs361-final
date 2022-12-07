@@ -80,25 +80,25 @@ end
 
 class Waypoint
 
-  attr_reader :location, :name, :type
+  attr_reader :location, :name, :icon
 
-  def initialize(location, name=nil, type=nil)
-    @location = location.as_list
+  def initialize(location, name=nil, icon=nil)
+    @location = location
     @name = name
-    @type = type
+    @icon = icon
   end
 
   def get_object
     waypoint = {}
     waypoint["type"] = "Feature"
-    waypoint["geometry"] = {"type": "Point", "coordinates": self.location}
-    if name != nil or type != nil
+    waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
+    if name != nil or icon != nil
       properties = {}
       if name != nil
         properties["title"] = self.name
       end
-      if type != nil
-        properties["icon"] = self.type
+      if icon != nil
+        properties["icon"] = self.icon
       end
       waypoint["properties"] = properties
     end
@@ -138,6 +138,7 @@ def main()
 
   home = Waypoint.new(home_location, "home", "flag")
   store = Waypoint.new(store_location, "store", "dot")
+  
   tracks_1 = [
     Point.new(-122, 45),
     Point.new(-122, 46),

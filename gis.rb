@@ -2,8 +2,13 @@
 
 require "json"
 
+class GeoJson
+  def get_json(space=' ')
+    JSON.generate(self.get_object, space: space)
+  end
+end
 
-class Track
+class Track < GeoJson
   def initialize(segments, name=nil)
     @segments = segments
     @name = name
@@ -34,9 +39,9 @@ class Track
     track
   end
 
-  def get_json(space=' ')
-    JSON.generate(self.get_object, space: space)
-  end
+  # def get_json(space=' ')
+  #   JSON.generate(self.get_object, space: space)
+  # end
 end
 
 
@@ -82,7 +87,7 @@ end
 
 
 
-class Waypoint
+class Waypoint < GeoJson
 
   attr_reader :location, :name, :icon
 
@@ -109,12 +114,12 @@ class Waypoint
   waypoint
   end
 
-  def get_json(space=' ')
-    JSON.generate(self.get_object, space: space)
-  end
+  # def get_json(space=' ')
+  #   JSON.generate(self.get_object, space: space)
+  # end
 end
 
-class World
+class World < GeoJson
   def initialize(name, features)
     @name = name
     @features = features
@@ -123,15 +128,19 @@ class World
     @features.append(feature)
   end
 
-  def to_geojson(space=' ')
+  def get_object
     geo = {"type": "FeatureCollection"}
     feature_list = []
     @features.each do |feature|
       feature_list.append(feature.get_object)
     end
     geo["features"] = feature_list
+    geo
+  end
 
-    JSON.generate(geo, space: space)
+  def to_geojson
+    self.get_json
+    # JSON.generate(self.get_object, space: space)
   end
 end
 

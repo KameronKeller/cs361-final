@@ -14,7 +14,7 @@ class Track
     @segments = segment_objects
   end
 
-  def get_track_json()
+  def get_json()
     json_output = '{'
     json_output += '"type": "Feature", '
     if @name != nil

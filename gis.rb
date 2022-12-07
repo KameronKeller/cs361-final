@@ -22,20 +22,26 @@ class Track < GeoJson
     converted_segments
   end
 
-  def build_object
-    track = {}
-
-    track["type"] = "Feature"
-    if @name != nil
-      properties = {}
-      properties["title"] = @name
-      track["properties"] = properties
-    end
+  def build_geometry
     geometry = {}
     geometry["type"] = "MultiLineString"
-
     geometry["coordinates"] = self.as_lists
-    track["geometry"] = geometry
+    geometry
+  end
+
+  def build_properties
+    properties = {}
+    properties["title"] = @name
+    properties
+  end
+
+  def build_object
+    track = {}
+    track["type"] = "Feature"
+    if @name != nil
+      track["properties"] = self.build_properties
+    end
+    track["geometry"] = self.build_geometry
     track
   end
 

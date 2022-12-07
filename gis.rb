@@ -100,11 +100,7 @@ class Waypoint < GeoJson
     @icon = icon
   end
 
-  def build_object
-    waypoint = {}
-    waypoint["type"] = "Feature"
-    waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
-    if name != nil or icon != nil
+  def build_properties
       properties = {}
       if name != nil
         properties["title"] = self.name
@@ -112,7 +108,16 @@ class Waypoint < GeoJson
       if icon != nil
         properties["icon"] = self.icon
       end
-      waypoint["properties"] = properties
+      properties
+  end
+
+  def build_object
+    waypoint = {}
+    waypoint["type"] = "Feature"
+    waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
+    if name != nil or icon != nil
+
+      waypoint["properties"] = self.build_properties
     end
   waypoint
   end

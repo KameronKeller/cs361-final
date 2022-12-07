@@ -90,7 +90,7 @@ end
 class Waypoint
 
   # attr_reader :latitude, :longitude, :elevation, :name, :type
-  attr_reader :location
+  attr_reader :location, :name, :type
 
   # def initialize(longitude, latitude, elevation=nil, name=nil, type=nil)
   def initialize(location, name=nil, type=nil)
@@ -102,33 +102,24 @@ class Waypoint
     @type = type
   end
 
-  def get_waypoint_json(indent=0)
+  # def get_waypoint
+
+  def get_waypoint_json(space=' ')
     waypoint = {}
-
-
-    json_output = '{"type": "Feature",'
-    # if name is not nil or type is not nil
-    json_output += '"geometry": {"type": "Point","coordinates": '
-    json_output += "[#{@longitude},#{@latitude}"
-    if elevation != nil
-      json_output += ",#{@elevation}"
-    end
-    json_output += ']},'
+    waypoint["type"] = "Feature"
+    waypoint["geometry"] = {"type": "Point", "coordinates": self.location}
+    
     if name != nil or type != nil
-      json_output += '"properties": {'
+      properties = {}
       if name != nil
-        json_output += '"title": "' + @name + '"'
+        properties["title"] = self.name
       end
-      if type != nil  # if type is not nil
-        if name != nil
-          json_output += ','
-        end
-        json_output += '"icon": "' + @type + '"'  # type is the icon
+      if type != nil
+        properties["icon"] = self.type
       end
-      json_output += '}'
+      waypoint["properties"] = properties
     end
-    json_output += "}"
-    return json_output
+    JSON.generate(waypoint, space: space)
   end
 end
 
@@ -163,7 +154,8 @@ def main()
   if true
     test_point = Point.new(-121.5, 45.5, 30)
     home = Waypoint.new(test_point, "home", "flag")
-    p home.location
+    # p home.location
+    puts home.get_waypoint_json
   end
 
 

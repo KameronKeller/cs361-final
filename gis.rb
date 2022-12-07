@@ -5,50 +5,41 @@ require "json"
 
 class Track
   def initialize(segments, name=nil)
+    @segments = segments
     @name = name
-    segment_objects = []
-    segments.each do |segment|
-      segment_objects.append(TrackSegment.new(segment))
-    end
-    # set segments to segment_objects
-    @segments = segment_objects
   end
 
-  def get_json()
-    json_output = '{'
-    json_output += '"type": "Feature", '
+  def convert_segment_points_to_list(segments)
+    converted_segments = []
+    segments.each do |segment|
+      segment_list = []
+      segment.each do |point|
+        segment_list.append(point.as_list)
+      end
+      converted_segments.append(segment_list)
+    end
+    converted_segments
+  end
+
+  def get_object
+    track = {}
+
+    track["type"] = "Feature"
     if @name != nil
-      json_output+= '"properties": {'
-      json_output += '"title": "' + @name + '"'
-      json_output += '},'
+      properties = {}
+      properties["title"] = @name
+      track["properties"] = properties
     end
-    json_output += '"geometry": {'
-    json_output += '"type": "MultiLineString",'
-    json_output +='"coordinates": ['
-    # Loop through all the segment objects
-    @segments.each_with_index do |segment, index|
-      if index > 0
-        json_output += ","
-      end
-      json_output += '['
-      # Loop through all the coordinates in the segment
-      track_segment_json = ''
-      segment.coordinates.each do |coordinate|
-        if track_segment_json != ''
-          track_segment_json += ','
-        end
-        # Add the coordinate
-        track_segment_json += '['
-        track_segment_json += "#{coordinate.longitude},#{coordinate.latitude}"
-        if coordinate.elevation != nil
-          track_segment_json += ",#{coordinate.elevation}"
-        end
-        track_segment_json += ']'
-      end
-      json_output+=track_segment_json
-      json_output+=']'
-    end
-    json_output + ']}}'
+    geometry = {}
+    geometry["type"] = "MultiLineString"
+
+    geometry["coordinates"] = self.convert_segment_points_to_list(@segments)
+    track["geometry"] = geometry
+    track
+  end
+
+  def get_json(space=' ')
+    JSON.generate(self.get_object, space: space)
   end
 end
 
@@ -97,7 +88,7 @@ class Waypoint
     @type = type
   end
 
-  def get_waypoint
+  def get_object
     waypoint = {}
     waypoint["type"] = "Feature"
     waypoint["geometry"] = {"type": "Point", "coordinates": self.location}
@@ -115,7 +106,8 @@ class Waypoint
   end
 
   def get_json(space=' ')
-    JSON.generate(self.get_waypoint, space: space)
+    # self.get_waypoint
+    JSON.generate(self.get_object, space: space)
   end
 end
 
@@ -135,10 +127,11 @@ class World
 
   def to_geojson(space=' ')
     geo = {"type": "FeatureCollection"}
-    geo["features"] = []
+    feature_list = []
     @features.each do |feature|
-      geo["features"].append(feature.get_json)
+      feature_list.append(feature.get_object)
     end
+    geo["features"] = feature_list
     # json_output = '{"type": "FeatureCollection","features": ['
     # @features.each_with_index do |feature, index|
       # if index != 0
@@ -158,10 +151,17 @@ end
 def main()
 
   if false
-    test_point = Point.new(-121.5, 45.5, 30)
-    home = Waypoint.new(test_point, "home", "flag")
-    # p home.location
-    puts home.get_waypoint_json
+    ts1 = [
+      Point.new(-122, 45),
+      Point.new(-122, 46),
+      Point.new(-121, 46),
+    ]
+
+    ts2 = [ Point.new(-121, 45), Point.new(-121, 46), ]
+
+    t = Track.new([ts1, ts2], "track 1")
+    expected = JSON.parse('{"type": "Feature", "properties": {"title": "track 1"},"geometry": {"type": "MultiLineString","coordinates": [[[-122,45],[-122,46],[-121,46]],[[-121,45],[-121,46]]]}}')
+    p t.get_object
   end
 
 
@@ -192,7 +192,7 @@ def main()
     track_2 = Track.new([tracks_3], "track 2")
 
     world = World.new("My Data", [home, store, track_1, track_2])
-    p world.to_geo
+    puts world.to_geojson
 
     # puts world.to_geojson()
   end

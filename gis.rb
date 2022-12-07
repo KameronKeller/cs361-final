@@ -14,6 +14,7 @@ class Track < GeoJson
     @name = name
   end
 
+  # Resulting format: [ [ [lon, lat], [lon, lat] ], [ [lon, lat] ], ... ]
   def as_lists
     converted_segments = []
     @segments.each do |segment|
@@ -51,6 +52,7 @@ class TrackSegment
     @coordinates = coordinates
   end
 
+  # Resulting format: [  [lon, lat], [lon, lat], ...  ]
   def as_lists
     converted_points = []
     @coordinates.each do |point|
@@ -96,7 +98,7 @@ class Waypoint < GeoJson
     waypoint = {}
     waypoint['type'] = 'Feature'
     waypoint['geometry'] = { "type": 'Point', "coordinates": location.as_list }
-    waypoint['properties'] = build_properties if !name.nil? or !icon.nil?
+    waypoint['properties'] = build_properties if !name.nil? || !icon.nil?
     waypoint
   end
 end
@@ -121,7 +123,6 @@ class World < GeoJson
 
   def build_object
     geo = { "type": 'FeatureCollection' }
-
     geo['features'] = build_feature_list
     geo
   end

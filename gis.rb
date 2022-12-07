@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-require "json"
+require 'json'
 
 class GeoJson
   def get_json(space = ' ')
-    JSON.generate(self.build_object, space: space)
+    JSON.generate(build_object, space:)
   end
 end
 
@@ -14,7 +14,7 @@ class Track < GeoJson
     @name = name
   end
 
-  def as_lists()
+  def as_lists
     converted_segments = []
     @segments.each do |segment|
       converted_segments.append(segment.as_lists)
@@ -24,24 +24,22 @@ class Track < GeoJson
 
   def build_geometry
     geometry = {}
-    geometry["type"] = "MultiLineString"
-    geometry["coordinates"] = self.as_lists
+    geometry['type'] = 'MultiLineString'
+    geometry['coordinates'] = as_lists
     geometry
   end
 
   def build_properties
     properties = {}
-    properties["title"] = @name
+    properties['title'] = @name
     properties
   end
 
   def build_object
     track = {}
-    track["type"] = "Feature"
-    if @name != nil
-      track["properties"] = self.build_properties
-    end
-    track["geometry"] = self.build_geometry
+    track['type'] = 'Feature'
+    track['properties'] = build_properties unless @name.nil?
+    track['geometry'] = build_geometry
     track
   end
 end
@@ -53,7 +51,7 @@ class TrackSegment
     @coordinates = coordinates
   end
 
-  def as_lists()
+  def as_lists
     converted_points = []
     @coordinates.each do |point|
       converted_points.append(point.as_list)
@@ -73,9 +71,7 @@ class Point
 
   def as_list
     point = [longitude, latitude]
-    if elevation != nil
-      point.append(elevation)
-    end
+    point.append(elevation) unless elevation.nil?
     point
   end
 end
@@ -91,22 +87,16 @@ class Waypoint < GeoJson
 
   def build_properties
     properties = {}
-    if name != nil
-      properties["title"] = self.name
-    end
-    if icon != nil
-      properties["icon"] = self.icon
-    end
+    properties['title'] = name unless name.nil?
+    properties['icon'] = icon unless icon.nil?
     properties
   end
 
   def build_object
     waypoint = {}
-    waypoint["type"] = "Feature"
-    waypoint["geometry"] = { "type": "Point", "coordinates": self.location.as_list }
-    if name != nil or icon != nil
-      waypoint["properties"] = self.build_properties
-    end
+    waypoint['type'] = 'Feature'
+    waypoint['geometry'] = { "type": 'Point', "coordinates": location.as_list }
+    waypoint['properties'] = build_properties if !name.nil? or !icon.nil?
     waypoint
   end
 end
@@ -130,23 +120,23 @@ class World < GeoJson
   end
 
   def build_object
-    geo = { "type": "FeatureCollection" }
+    geo = { "type": 'FeatureCollection' }
 
-    geo["features"] = self.build_feature_list
+    geo['features'] = build_feature_list
     geo
   end
 
   def to_geojson
-    self.get_json
+    get_json
   end
 end
 
-def main()
+def main
   home_location = Point.new(-121.5, 45.5, 30)
   store_location = Point.new(-121.5, 45.6, nil)
 
-  home = Waypoint.new(home_location, "home", "flag")
-  store = Waypoint.new(store_location, "store", "dot")
+  home = Waypoint.new(home_location, 'home', 'flag')
+  store = Waypoint.new(store_location, 'store', 'dot')
 
   segment_1 = TrackSegment.new([
                                  Point.new(-122, 45),
@@ -164,14 +154,12 @@ def main()
                                  Point.new(-122, 45.5)
                                ])
 
-  track_1 = Track.new([segment_1, segment_2], "track 1")
-  track_2 = Track.new([segment_3], "track 2")
+  track_1 = Track.new([segment_1, segment_2], 'track 1')
+  track_2 = Track.new([segment_3], 'track 2')
 
-  world = World.new("My Data", [home, store, track_1, track_2])
+  world = World.new('My Data', [home, store, track_1, track_2])
 
   puts world.to_geojson
 end
 
-if File.identical?(__FILE__, $0)
-  main()
-end
+main if File.identical?(__FILE__, $0)

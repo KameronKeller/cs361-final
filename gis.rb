@@ -114,7 +114,7 @@ class Waypoint
   waypoint
   end
 
-  def get_waypoint_json(space=' ')
+  def get_json(space=' ')
     JSON.generate(self.get_waypoint, space: space)
   end
 end

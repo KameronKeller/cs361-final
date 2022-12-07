@@ -8,19 +8,19 @@ class TestGis < Test::Unit::TestCase
     point = Point.new(-121.5, 45.5, 30)
     w = Waypoint.new(point, "home", "flag")
     expected = JSON.parse('{"type": "Feature","properties": {"title": "home","icon": "flag"},"geometry": {"type": "Point","coordinates": [-121.5,45.5,30]}}')
-    result = JSON.parse(w.get_waypoint_json)
+    result = JSON.parse(w.get_json)
     assert_equal(result, expected)
 
     point = Point.new(-121.5, 45.5, nil)
     w = Waypoint.new(point, nil, "flag")
     expected = JSON.parse('{"type": "Feature","properties": {"icon": "flag"},"geometry": {"type": "Point","coordinates": [-121.5,45.5]}}')
-    result = JSON.parse(w.get_waypoint_json)
+    result = JSON.parse(w.get_json)
     assert_equal(result, expected)
 
     point = Point.new(-121.5, 45.5, nil)
     w = Waypoint.new(point, "store", nil)
     expected = JSON.parse('{"type": "Feature","properties": {"title": "store"},"geometry": {"type": "Point","coordinates": [-121.5,45.5]}}')
-    result = JSON.parse(w.get_waypoint_json)
+    result = JSON.parse(w.get_json)
     assert_equal(result, expected)
   end
 

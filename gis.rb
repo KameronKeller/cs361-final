@@ -50,6 +50,14 @@ class TrackSegment
   def initialize(coordinates)
     @coordinates = coordinates
   end
+
+  def as_lists()
+    segment =[]
+    @coordinates.each do |point|
+      segment.append(point.as_list)
+    end
+    segment
+  end
 end
 
 
@@ -138,6 +146,12 @@ def main()
 
   home = Waypoint.new(home_location, "home", "flag")
   store = Waypoint.new(store_location, "store", "dot")
+
+  segment_1 = TrackSegment.new([
+    Point.new(-122, 45),
+    Point.new(-122, 46),
+    Point.new(-121, 46)
+  ])
   
   tracks_1 = [
     Point.new(-122, 45),

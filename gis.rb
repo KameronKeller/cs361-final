@@ -2,6 +2,7 @@
 
 require "json"
 
+
 class Track
   def initialize(segments, name=nil)
     @name = name
@@ -50,12 +51,18 @@ class Track
     json_output + ']}}'
   end
 end
+
+
+
 class TrackSegment
   attr_reader :coordinates
   def initialize(coordinates)
     @coordinates = coordinates
   end
 end
+
+
+
 
 class Point
 
@@ -68,11 +75,16 @@ class Point
   end
 end
 
+
+
+
 class Waypoint
 
   attr_reader :latitude, :longitude, :elevation, :name, :type
 
-  def initialize(longitude, latitude, elevation=nil, name=nil, type=nil)
+  # def initialize(longitude, latitude, elevation=nil, name=nil, type=nil)
+  def initialize(location, name=nil, type=nil)
+    @location = location
     @longitude = longitude
     @latitude = latitude
     @elevation = elevation
@@ -134,6 +146,9 @@ class World
 end
 
 def main()
+  home_location = Point.new(-121.5, 45.5, 30)
+  store_location = Point.new(-121.5, 45.6, nil)
+
   home = Waypoint.new(-121.5, 45.5, 30, "home", "flag")
   store = Waypoint.new(-121.5, 45.6, nil, "store", "dot")
   tracks_1 = [

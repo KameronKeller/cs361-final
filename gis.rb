@@ -116,7 +116,6 @@ class Waypoint < GeoJson
     waypoint["type"] = "Feature"
     waypoint["geometry"] = {"type": "Point", "coordinates": self.location.as_list}
     if name != nil or icon != nil
-
       waypoint["properties"] = self.build_properties
     end
   waypoint
@@ -133,13 +132,18 @@ class World < GeoJson
     @features.append(feature)
   end
 
-  def build_object
-    geo = {"type": "FeatureCollection"}
+  def build_feature_list
     feature_list = []
     @features.each do |feature|
       feature_list.append(feature.build_object)
     end
-    geo["features"] = feature_list
+    feature_list
+  end
+
+  def build_object
+    geo = {"type": "FeatureCollection"}
+    
+    geo["features"] = self.build_feature_list
     geo
   end
 

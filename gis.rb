@@ -9,14 +9,10 @@ class Track
     @name = name
   end
 
-  def convert_segment_points_to_list(segments)
+  def as_lists()
     converted_segments = []
-    segments.each do |segment|
-      segment_list = []
-      segment.each do |point|
-        segment_list.append(point.as_list)
-      end
-      converted_segments.append(segment_list)
+    @segments.each do |segment|
+      converted_segments.append(segment.as_lists)
     end
     converted_segments
   end
@@ -33,7 +29,7 @@ class Track
     geometry = {}
     geometry["type"] = "MultiLineString"
 
-    geometry["coordinates"] = self.convert_segment_points_to_list(@segments)
+    geometry["coordinates"] = self.as_lists
     track["geometry"] = geometry
     track
   end
@@ -52,11 +48,11 @@ class TrackSegment
   end
 
   def as_lists()
-    segment =[]
+    converted_points = []
     @coordinates.each do |point|
-      segment.append(point.as_list)
+      converted_points.append(point.as_list)
     end
-    segment
+    converted_points
   end
 end
 
@@ -152,25 +148,19 @@ def main()
     Point.new(-122, 46),
     Point.new(-121, 46)
   ])
-  
-  tracks_1 = [
-    Point.new(-122, 45),
-    Point.new(-122, 46),
-    Point.new(-121, 46)
-  ]
 
-  tracks_2 = [
+  segment_2 = TrackSegment.new([
     Point.new(-121, 45),
     Point.new(-121, 46)
-  ]
+  ])
 
-  tracks_3 = [
+  segment_3 = TrackSegment.new([
     Point.new(-121, 45.5),
     Point.new(-122, 45.5)
-  ]
+  ])
 
-  track_1 = Track.new([tracks_1, tracks_2], "track 1")
-  track_2 = Track.new([tracks_3], "track 2")
+  track_1 = Track.new([segment_1, segment_2], "track 1")
+  track_2 = Track.new([segment_3], "track 2")
 
   world = World.new("My Data", [home, store, track_1, track_2])
   

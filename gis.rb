@@ -92,19 +92,13 @@ class Waypoint
   # attr_reader :latitude, :longitude, :elevation, :name, :type
   attr_reader :location, :name, :type
 
-  # def initialize(longitude, latitude, elevation=nil, name=nil, type=nil)
   def initialize(location, name=nil, type=nil)
     @location = location.as_list
-    # @longitude = longitude
-    # @latitude = latitude
-    # @elevation = elevation
     @name = name
     @type = type
   end
 
-  # def get_waypoint
-
-  def get_waypoint_json(space=' ')
+  def get_waypoint
     waypoint = {}
     waypoint["type"] = "Feature"
     waypoint["geometry"] = {"type": "Point", "coordinates": self.location}
@@ -119,7 +113,11 @@ class Waypoint
       end
       waypoint["properties"] = properties
     end
-    JSON.generate(waypoint, space: space)
+  waypoint
+  end
+
+  def get_waypoint_json(space=' ')
+    JSON.generate(self.get_waypoint, space: space)
   end
 end
 
